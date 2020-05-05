@@ -11,4 +11,4 @@ const app = express();
 app.use(login);
 app.use(register);
 
-app.listen(5001, () => console.log('Server started on port 5001'));
+app.listen(process.env.PORT || 5001, () => console.log('Server started on port 5001'));
