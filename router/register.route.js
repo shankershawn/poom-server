@@ -16,7 +16,7 @@ poomdb.model('schemas', new poomdb.Schema({name: String}), 'schemas').findOne({"
 register.use(bodyParser.json());
 register.use(bodyParser.urlencoded({extended: false}));
 register.use((req, res, next) => {
-    res.header("Access-Control-Allow-Origin", "http://localhost:8000");
+    res.header("Access-Control-Allow-Origin", process.env.UI_URL);
     next();
 });
 var messages = [];
