@@ -4,11 +4,15 @@
  * and open the template in the editor.
  */
 const express = require('express');
-const login = require('./router/login.route');
-const register = require('./router/register.route');
 const app = express();
 
-app.use(login);
-app.use(register);
-
-app.listen(process.env.PORT || 5001, () => console.log('Server started on port ' + (process.env.PORT || 5001)));
+const loadRoutes = async () => {
+    app.use(await require('./router/register.route'));
+    app.use(await require('./router/login.route'));
+};
+console.log("Loading routes");
+loadRoutes().then(() => {
+    app.listen(process.env.PORT || 5001, () => console.log('Server started on port ' + (process.env.PORT || 5001)));
+}).catch((err) => {
+    console.error(err);
+});
