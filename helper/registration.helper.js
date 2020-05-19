@@ -18,7 +18,7 @@ var methods = {
                 messages.push({messageDetail: 'Your username must contain at least one alphabet.'});
             }
 
-            validator = new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^a-zA-Z\\d]).*$');
+            /*validator = new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[^a-zA-Z\\d]).*$');
             if(!registrationRequestDTO.password || registrationRequestDTO.password != validator.exec(registrationRequestDTO.password)){
                 messages.push({messageDetail: 'Your password must contain a combination of uppercase, lowercase, digits and special characters.'});
             }
@@ -26,7 +26,7 @@ var methods = {
             validator = new RegExp('^(?=.*\\D$)(?=.*^\\D).*$');
             if(!registrationRequestDTO.password || registrationRequestDTO.password != validator.exec(registrationRequestDTO.password)){
                 messages.push({messageDetail: 'Your password cannot begin or end with digits.'});
-            }
+            }*/
 
             validator = new RegExp('([^@]+)([@])([a-zA-Z\d]+)([.])([a-zA-Z\d]+)');
             if(!registrationRequestDTO.email || registrationRequestDTO.email != validator.exec(registrationRequestDTO.email)[0]){

@@ -5,6 +5,7 @@ module.exports = (async () => {
     const bodyParser = require('body-parser');
     const poomdb = await require('../util/mongodb.util');
     const registrationHelper = require('../helper/registration.helper');
+    const cryptojs = require('crypto-js');
     
     console.log("Loading Register route");
     
@@ -30,6 +31,9 @@ module.exports = (async () => {
             res.status(400).json(messages);
         }else{
             var userRegData = new UserRegModel(req.body);
+            console.log(userRegData);
+            userRegData.password = cryptojs.SHA512(userRegData.password).toString(cryptojs.enc.Base64);
+            console.log(userRegData);
             userRegData.save()
                 .then(() => {
                     console.log('Data saved!');
