@@ -1,6 +1,5 @@
 module.exports = (async () => {
     const express = require('express');
-    const jwtUtil = require('../util/jwt.util');
     const register = express();
     const bodyParser = require('body-parser');
     const poomdb = await require('../util/mongodb.util');
@@ -45,6 +44,39 @@ module.exports = (async () => {
                     messages.push({messageDetail: 'Something went wrong. Please try again later.'})
                     res.status(500).json(messages);
                 });
+        }
+    });
+
+    register.get('/validate/:key/:value', (req, res) => {
+        const param = req.params;
+        var mongoSearchParam;
+        var messageDetail;
+        var isValid = true;
+        if(param && param.key && param.value){
+            if(param.key == "email"){
+                mongoSearchParam = {"email": decodeURIComponent(param.value)};
+                messageDetail = "The email address entered by you already exists in our records. Please enter a different email address.";
+            }else if(param.key == "phone"){
+                mongoSearchParam = {"phone": decodeURIComponent(param.value)};
+                messageDetail = "The phone number entered by you already exists in our records. Please enter a different phone number.";
+            }else if(param.key == "username"){
+                mongoSearchParam = {"username": decodeURIComponent(param.value)};
+                messageDetail = "The username entered by you already exists in our records. Please enter a different username.";
+            }
+            if(mongoSearchParam){
+                UserRegModel.countDocuments(mongoSearchParam, (err, count) => {
+                    if(count > 0){
+                        isValid = false;
+                        res.json({isValid, messageDetail});
+                    }else{
+                        res.json({isValid});
+                    }
+                });
+            }else{
+                isValid = false;
+                messageDetail = "Invalid parameters";
+                res.json({isValid, messageDetail});
+            }
         }
     });
     return register;
