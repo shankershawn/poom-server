@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const mongodbUrl = process.env.DB_CONNECTION_URL;
+const mongodbUrl = process.env.DB_CONNECTION_URL || "mongodb://localhost:27017/poomdb";
 
 module.exports = (async () => {
     await mongoose

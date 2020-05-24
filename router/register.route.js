@@ -5,17 +5,13 @@ module.exports = (async () => {
     const poomdb = await require('../util/mongodb.util');
     const registrationHelper = require('../helper/registration.helper');
     const cryptojs = require('crypto-js');
+    const modelUtil = require('../util/model.util');
     
     console.log("Loading Register route");
     
-    var UserRegModel;
-    const collectionName = 'user_registration';
-    poomdb.model('schemas', new poomdb.Schema({name: String}), 'schemas').findOne({"name": collectionName}, (err, colldata) => {
-        if(err) throw err;
-        const schema = JSON.parse(JSON.stringify(colldata)).definition;
-        UserRegModel = poomdb.model(collectionName, new poomdb.Schema(schema), collectionName);
-    });
-    
+    var UserRegModel = await modelUtil.getModel('user_registration');
+    //var Pages = await modelUtil.getModel('pages');
+
     register.use(bodyParser.json());
     register.use(bodyParser.urlencoded({extended: false}));
     register.use((req, res, next) => {
@@ -27,22 +23,20 @@ module.exports = (async () => {
     register.post('/register', (req, res) => {
         messages = registrationHelper.validateInput(req.body);
         if(messages.length > 0){
-            res.status(400).json(messages);
+            res.status(400).send(messages);
         }else{
             var userRegData = new UserRegModel(req.body);
-            console.log(userRegData);
             userRegData.password = cryptojs.SHA512(userRegData.password).toString(cryptojs.enc.Base64);
-            console.log(userRegData);
             userRegData.save()
                 .then(() => {
                     console.log('Data saved!');
                     messages.push({messageDetail: 'Welcome aboard.   - From Poom! :).'})
-                    res.status(200).json(messages);
+                    res.json(messages);
                 })
                 .catch((err) => {
                     console.log(err);
                     messages.push({messageDetail: 'Something went wrong. Please try again later.'})
-                    res.status(500).json(messages);
+                    res.status(500).send(messages);
                 });
         }
     });

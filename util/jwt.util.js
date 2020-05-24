@@ -6,16 +6,24 @@ var jwtUtil  = {
     sign: (payload) => {
         return new Promise((resolve, reject) => {
             jwt.sign(payload, secretKey, (err, token) => {
-                if(!err){
-                    resolve(token);
-                }else{
+                if(err){
                     reject(err);
+                }else{
+                    resolve(token);
                 }
             });
         });
     },
-    verify: (signature) => {
-        console.log('Accessed verify');
+    verify: (token) => {
+        return new Promise((resolve, reject) => {
+            jwt.verify(token, secretKey, (err, payload) => {
+                if(err){
+                    reject(err);
+                }else{
+                    resolve(payload);
+                }
+            });
+        });
     }
 };
 
