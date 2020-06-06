@@ -10,7 +10,6 @@ module.exports = (async () => {
     console.log("Loading Register route");
     
     var UserRegModel = await modelUtil.getModel('user_registration');
-    //var Pages = await modelUtil.getModel('pages');
 
     register.use(bodyParser.json());
     register.use(bodyParser.urlencoded({extended: false}));

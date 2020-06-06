@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-const secretKey = "jdkjswfJdfwNDTuVFW3fvsdc";
+const secretKey = "daswkFZNhTsBJdBsf32w4459e239uengdfvqworjv8345htert95";
 
 var jwtUtil  = {
     sign: (payload) => {
