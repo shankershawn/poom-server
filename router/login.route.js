@@ -86,13 +86,24 @@ module.exports = (async () => {
                         resolve();
                     })
                     .catch((err) => {
-                        console.error(err);
                         reject();
                     })
                 ;
             }
         });
     };
+
+    login.get('/verify', (req, res) => {
+        verifyToken(req, res)
+            .then(() => {
+                res.sendStatus(200);
+            })
+            .catch(() => {
+                res.status(403).send({
+                    messageDetail: "You are not authorized to perform this operation. Please sign-in and try again."
+                });
+            });
+    });
 
     login.get('/topmenu', (req, res) => {
         verifyToken(req, res)
