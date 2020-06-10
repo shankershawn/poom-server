@@ -108,7 +108,7 @@ module.exports = (async () => {
     login.get('/topmenu', (req, res) => {
         verifyToken(req, res)
         .then(() => {
-            PageModel.find({accessLevel: "U"}, {'_id': 0, 'iconClass': 1, 'id': 1, 'isDefault': 1, 'label': 1, 'name': 1}, {lean: true}, (err, pageDataArray) => {
+            PageModel.find({accessLevel: "U"}, {'_id': 0, 'iconClass': 1, 'id': 1, 'isDefault': 1, 'label': 1, 'name': 1}, {lean: true, sort: {displayOrder: 1}}, (err, pageDataArray) => {
                 if(err){
                     res.status(500).send({
                         messageDetail: "Something went wrong. Please try again later."
