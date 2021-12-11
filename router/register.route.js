@@ -1,8 +1,5 @@
 module.exports = (async () => {
-    const express = require('express');
-    const register = express();
-    const bodyParser = require('body-parser');
-    const poomdb = await require('../util/mongodb.util');
+    const register = await require('../util/express.util').getModule();
     const registrationHelper = require('../helper/registration.helper');
     const cryptojs = require('crypto-js');
     const modelUtil = require('../util/model.util');
@@ -10,13 +7,6 @@ module.exports = (async () => {
     console.log("Loading Register route");
     
     var UserRegModel = await modelUtil.getModel('user_registration');
-
-    register.use(bodyParser.json());
-    register.use(bodyParser.urlencoded({extended: false}));
-    register.use((req, res, next) => {
-        res.header("Access-Control-Allow-Origin", process.env.UI_URL);
-        next();
-    });
     var messages = [];
     
     register.post('/register', (req, res) => {

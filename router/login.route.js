@@ -1,24 +1,20 @@
 module.exports = (async () => {
-    const express = require('express');
     const jwtUtil = require('../util/jwt.util');
     const ssoUtil = await require('../util/sso.util');
-    const login = express();
-    const bodyParser = require('body-parser');
+    const login = await require('../util/express.util').getModule();
     const modelUtil = require('../util/model.util');
     const cryptojs = require('crypto-js');
+    const verifyToken = require('../util/token.util').verifyToken;
     
     console.log("Loading Login route");
     
-    login.use(bodyParser.json());
-    login.use(bodyParser.urlencoded({extended: false}));
     login.use((req, res, next) => {
-        res.header("Access-Control-Allow-Origin", process.env.UI_URL);
         res.header("Access-Control-Allow-Headers", "authorization,x-auth-type");
         next();
     });
 
     var UserRegModel = await modelUtil.getModel('user_registration');
-    var PageModel  = await modelUtil.getModel('pages');
+    var PageModel  = await modelUtil.getModel('pagesNew');
 
     var setToken = (payload, res) => {
         return new Promise((resolve, reject) => {
@@ -92,52 +88,13 @@ module.exports = (async () => {
         });
     });
 
-    var verifyToken = (req, res) => {
-        return new Promise((resolve, reject) => {
-            var token = req.header("authorization");
-            var auth_type = req.header("x-auth-type");
-            if(!token || !auth_type){
-                reject();
-            }else{
-                if("g" == auth_type){
-                    token = token.split("Bearer ")[1];
-                    ssoUtil
-                        .verifyGoogleToken(token)
-                        .then(() => {
-                            resolve();
-                        })
-                        .catch((err) => {
-                            reject(err)
-                        })
-                    ;
-                }else if("n" == auth_type){
-                    token = token.split("Bearer ")[1];
-                    jwtUtil
-                        .verify(token)
-                        .then((data) => {
-                            if(data.exp - Math.round(Date.now()/1000) < 900){
-                                data.exp = Math.round(Date.now()/1000) + 3600;
-                                setToken(data, res);
-                            }
-                            resolve();
-                        })
-                        .catch((err) => {
-                            reject(err);
-                        })
-                    ;
-                }else{
-                    reject();
-                }
-            }
-        });
-    };
-
     login.get('/verify', (req, res) => {
         verifyToken(req, res)
             .then(() => {
                 res.sendStatus(200);
             })
             .catch((err) => {
+                console.log(err);
                 res.status(403).send({
                     messageDetail: "You are not authorized to perform this operation. Please sign-in and try again."
                 });
@@ -147,7 +104,7 @@ module.exports = (async () => {
     login.get('/topmenu', (req, res) => {
         verifyToken(req, res)
         .then(() => {
-            PageModel.find({accessLevel: "U"}, {'_id': 0, 'iconClass': 1, 'id': 1, 'isDefault': 1, 'label': 1, 'name': 1}, {lean: true, sort: {displayOrder: 1}}, (err, pageDataArray) => {
+            PageModel.find({accessLevel: "U"}, {'_id': 0, 'path': 1, 'detail': 1}, {lean: true, sort: {displayOrder: 1}}, (err, pageDataArray) => {
                 if(err){
                     res.status(500).send({
                         messageDetail: "Something went wrong. Please try again later."
@@ -158,7 +115,7 @@ module.exports = (async () => {
                 });
             });
         })
-        .catch(() => {
+        .catch((err) => {
             res.status(403).send({
                 messageDetail: "You are not authorized to perform this operation. Please sign-in and try again."
             });

@@ -57,8 +57,11 @@ module.exports = (async () => {
             const https = require('https');
             return new Promise((resolve, reject) => {
                 if(!!token){
-                    https.get("https://accounts.google.com/o/oauth2/revoke?token=" + token)
-                    .on("finish", () => {
+                    https.get("https://accounts.google.com/o/oauth2/revoke?token=" + token, (resp) => {
+                        console.log(resp.statusCode);
+                    })
+                    .on("close", () => {
+                        console.log("Inside on-close");
                         resolve();
                     })
                     .on("error", (err) => {
